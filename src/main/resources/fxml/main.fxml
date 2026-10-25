@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.socialanalytics.javafx.controller.DashboardController"
+      prefHeight="820.0" prefWidth="1280.0" styleClass="root">
+
+    <!-- Top Navigation & Status Bar -->
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="top-bar">
+        <Label text="⚡ TrendSense" styleClass="app-title" />
+        <Label fx:id="modeBadgeLabel" text="DEMO MODE" styleClass="mode-badge-demo" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Platform filter -->
+        <HBox alignment="CENTER" spacing="6">
+            <Label text="Platform:" style="-fx-text-fill: #657568; -fx-font-weight: 600; -fx-font-size: 12px;" />
+            <ComboBox fx:id="platformFilterCombo" prefWidth="135" />
+        </HBox>
+
+        <!-- Multithreaded Progress Indicator -->
+        <HBox alignment="CENTER" spacing="8">
+            <ProgressBar fx:id="analysisProgressBar" prefWidth="85" visible="false" />
+            <Label fx:id="analysisStatusLabel" text="Ready" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+        </HBox>
+
+        <Button fx:id="refreshButton" text="⟳ Run Analytics" onAction="#handleRefreshAction" styleClass="btn-primary" />
+        <Button text="📥 Export Report" onAction="#handleExportReport" styleClass="btn-secondary" />
+        <Button fx:id="modeSwitchBtn" text="⚡ Explore Demo Mode" onAction="#handleToggleAppMode" styleClass="btn-secondary" />
+
+        <Separator orientation="VERTICAL" />
+
+        <Label fx:id="userGreetingLabel" text="Analyst Workspace" style="-fx-text-fill: #26372D; -fx-font-weight: 600; -fx-font-size: 12px;" />
+        <Button text="Logout" onAction="#handleLogout" styleClass="btn-secondary" />
+    </HBox>
+
+    <!-- Active Data Source & Connection Status Banner -->
+    <HBox fx:id="demoNoticeBox" alignment="CENTER_LEFT" spacing="12" styleClass="notice-banner">
+        <VBox.margin>
+            <Insets bottom="6" left="16" right="16" top="8" />
+        </VBox.margin>
+        <Label fx:id="noticeBadgeLabel" text="DEMO PREVIEW" style="-fx-text-fill: #B88738; -fx-font-weight: bold; -fx-font-size: 12px;" />
+        <Label fx:id="demoNoticeLabel" text="Demo Data – Not connected to a live social-media platform."
+               styleClass="notice-banner-text" HBox.hgrow="ALWAYS" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="bannerConnectBtn" text="Connect Live Account" onAction="#handleNavigateToConnectAccounts" styleClass="btn-primary" />
+        <Button fx:id="bannerSyncBtn" text="Sync Data" onAction="#handleSyncCurrentPlatform" styleClass="btn-success" />
+    </HBox>
+
+    <!-- Main Navigation TabPane -->
+    <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="tab-pane">
+
+        <!-- 1. Overview Tab -->
+        <Tab text="Overview">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="18" style="-fx-padding: 16px;">
+                    <!-- Main Dashboard Content Container -->
+                    <VBox fx:id="dashboardContentBox" spacing="18">
+                        <!-- KPI Cards Row -->
+                        <HBox spacing="14">
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                                <Label text="TOTAL POSTS" styleClass="metric-title" />
+                                <Label fx:id="kpiTotalPosts" text="0" styleClass="metric-value" />
+                                <Label text="Across connected channels" styleClass="metric-sub" />
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                                <Label text="TOTAL ENGAGEMENT" styleClass="metric-title" />
+                                <Label fx:id="kpiTotalEngagement" text="0" styleClass="metric-value" />
+                                <Label text="Likes, comments &amp; shares" styleClass="metric-sub" />
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                                <Label text="AVG ENGAGEMENT RATE" styleClass="metric-title" />
+                                <Label fx:id="kpiEngagementRate" text="0.00%" styleClass="metric-value" />
+                                <Label fx:id="kpiEngagementRateSub" text="Interactions / Audience" styleClass="metric-sub" />
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                                <Label text="DOMINANT SENTIMENT" styleClass="metric-title" />
+                                <Label fx:id="kpiDominantSentiment" text="Neutral" styleClass="metric-value" />
+                                <Label text="Evaluated audience reaction" styleClass="metric-sub" />
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                                <Label text="BEST POSTING TIME" styleClass="metric-title" />
+                                <Label fx:id="kpiBestTime" text="Calculating..." styleClass="metric-value" />
+                                <Label text="Optimal publication window" styleClass="metric-sub" />
+                            </VBox>
+                        </HBox>
+
+                        <!-- Top Performing Post Highlight Card -->
+                        <VBox styleClass="metric-card" spacing="8">
+                            <Label text="TOP PERFORMING POST HIGHLIGHT" styleClass="metric-title" />
+                            <Label fx:id="topPostContentLabel" text="Loading top post..." wrapText="true"
+                                   style="-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #26372D;" />
+                            <Label fx:id="topPostStatsLabel" text="" style="-fx-text-fill: #397653; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                        </VBox>
+
+                        <!-- Quick Overview Chart Row -->
+                        <HBox spacing="14" prefHeight="290">
+                            <VBox HBox.hgrow="ALWAYS" styleClass="metric-card">
+                                <Label text="Platform Interaction Comparison" styleClass="metric-title" />
+                                <BarChart fx:id="platformEngagementChart" legendVisible="false" VBox.vgrow="ALWAYS" animated="false">
+                                    <xAxis><CategoryAxis label="Platform" /></xAxis>
+                                    <yAxis><NumberAxis label="Interactions" /></yAxis>
+                                </BarChart>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- 2. Engagement Analysis Tab -->
+        <Tab text="Engagement">
+            <VBox spacing="16" style="-fx-padding: 18px;">
+                <!-- Engagement Summary KPI Cards -->
+                <HBox spacing="14">
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label text="TOTAL LIKES" styleClass="metric-title" />
+                        <Label fx:id="engTotalLikesLabel" text="0" styleClass="metric-value" />
+                        <Label text="Audience reactions" styleClass="metric-sub" />
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label text="TOTAL COMMENTS" styleClass="metric-title" />
+                        <Label fx:id="engTotalCommentsLabel" text="0" styleClass="metric-value" />
+                        <Label text="Direct conversations" styleClass="metric-sub" />
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label text="TOTAL SHARES" styleClass="metric-title" />
+                        <Label fx:id="engTotalSharesLabel" text="0" styleClass="metric-value" />
+                        <Label text="Amplification &amp; reshares" styleClass="metric-sub" />
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label text="TOTAL VIEWS" styleClass="metric-title" />
+                        <Label fx:id="engTotalViewsLabel" text="0" styleClass="metric-value" />
+                        <Label text="Plays &amp; impressions" styleClass="metric-sub" />
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label text="TOTAL ENGAGEMENT" styleClass="metric-title" />
+                        <Label fx:id="engTotalInteractionsLabel" text="0" styleClass="metric-value" />
+                        <Label text="Cumulative interactions" styleClass="metric-sub" />
+                    </VBox>
+                </HBox>
+
+                <!-- Section Header -->
+                <VBox spacing="3">
+                    <Label text="Top Performing Posts" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                    <Label text="Ranked by cumulative engagement (likes, comments, and shares). Double-click a row or click Inspect for complete caption and metadata." style="-fx-text-fill: #657568; -fx-font-size: 12px;" />
+                </VBox>
+
+                <TableView fx:id="topPostsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colTopPlatform" text="Platform" prefWidth="110" />
+                        <TableColumn fx:id="colTopType" text="Type" prefWidth="90" />
+                        <TableColumn fx:id="colTopContent" text="Post Caption / Content" prefWidth="420" />
+                        <TableColumn fx:id="colTopLikes" text="Likes" prefWidth="95" />
+                        <TableColumn fx:id="colTopComments" text="Comments" prefWidth="95" />
+                        <TableColumn fx:id="colTopShares" text="Shares" prefWidth="95" />
+                        <TableColumn fx:id="colTopViews" text="Views" prefWidth="95" />
+                        <TableColumn fx:id="colTopTotal" text="Total Interactions" prefWidth="130" />
+                        <TableColumn fx:id="colTopAction" text="Action" prefWidth="85" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- 3. Trending Topics Tab -->
+        <Tab text="Trending Topics">
+            <VBox spacing="14" style="-fx-padding: 16px;">
+                <!-- Compact Horizontal Bar Chart -->
+                <HBox spacing="14" prefHeight="165">
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card">
+                        <Label text="Top Topic Trend Scores (0 - 100)" styleClass="metric-title" />
+                        <BarChart fx:id="trendScoreChart" legendVisible="false" VBox.vgrow="ALWAYS" animated="false">
+                            <xAxis><NumberAxis label="Trend Score (0 - 100)" lowerBound="0" upperBound="100" autoRanging="false" tickUnit="20" /></xAxis>
+                            <yAxis><CategoryAxis label="Topic" /></yAxis>
+                        </BarChart>
+                    </VBox>
+                </HBox>
+
+                <Label text="Topic Trend Breakdown &amp; Mathematical Scoring Justification"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                
+                <!-- Primary Focal Table -->
+                <TableView fx:id="trendsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colTrendTopic" text="Topic / Keyword" prefWidth="175" />
+                        <TableColumn fx:id="colTrendScore" text="Score" prefWidth="85" />
+                        <TableColumn fx:id="colTrendGrowth" text="Growth %" prefWidth="105" />
+                        <TableColumn fx:id="colTrendMentions" text="Mentions" prefWidth="85" />
+                        <TableColumn fx:id="colTrendStatus" text="Status" prefWidth="105" />
+                        <TableColumn fx:id="colTrendExplanation" text="Score Calculation &amp; Weight Justification" prefWidth="580" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- 4. Google Search Trends Tab -->
+        <Tab text="Google Trends">
+            <VBox spacing="16" style="-fx-padding: 18px;">
+                <!-- Header Control Row -->
+                <HBox spacing="16" alignment="CENTER_LEFT" styleClass="metric-card">
+                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                        <Label text="Live Google Search Trends &amp; Real-Time Demand Feed" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                        <Label text="Real-time trending search volume queries retrieved directly from Google Trends Daily RSS Feed." style="-fx-text-fill: #657568; -fx-font-size: 12px;" />
+                    </VBox>
+                    <Label text="Region:" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    <ComboBox fx:id="googleTrendsRegionCombo" prefWidth="160" />
+                    <Button text="↻ Refresh Google Trends" onAction="#handleRefreshGoogleTrends" styleClass="btn-primary" />
+                </HBox>
+
+                <!-- Strategic Correlation Insight Banner -->
+                <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: #DCE7DC; -fx-border-color: #C5D9C5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 14;">
+                    <Label text="💡 OMNI-CHANNEL INSIGHT:" style="-fx-font-weight: bold; -fx-text-fill: #2D6042; -fx-font-size: 12px;" />
+                    <Label text="Google Trends captures macro search intent, while TrendSense captures social audience engagement. Cross-referencing these topics reveals high-demand content gaps for your channel." wrapText="true" HBox.hgrow="ALWAYS" style="-fx-text-fill: #26372D; -fx-font-size: 12px;" />
+                </HBox>
+
+                <!-- Google Trends Table -->
+                <TableView fx:id="googleTrendsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colGTRank" text="Rank" prefWidth="65" />
+                        <TableColumn fx:id="colGTTopic" text="Trending Search Query" prefWidth="240" />
+                        <TableColumn fx:id="colGTTraffic" text="Search Volume" prefWidth="130" />
+                        <TableColumn fx:id="colGTNews" text="Associated Breaking News / Event" prefWidth="440" />
+                        <TableColumn fx:id="colGTSource" text="News Source" prefWidth="160" />
+                        <TableColumn fx:id="colGTPubDate" text="Detected" prefWidth="140" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- 5. Sentiment Analysis Tab -->
+        <Tab text="Sentiment Analysis">
+            <HBox spacing="18" style="-fx-padding: 18px;">
+                <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="12" prefWidth="500">
+                    <Label text="Audience Sentiment Distribution" styleClass="metric-title" />
+                    <Label fx:id="sentimentCorpusLabel" text="Corpus: Analyzing posts..." style="-fx-text-fill: #397653; -fx-font-size: 11px;" wrapText="true" />
+                    <PieChart fx:id="sentimentPieChart" VBox.vgrow="ALWAYS" />
+                    <HBox spacing="16" alignment="CENTER">
+                        <VBox alignment="CENTER">
+                            <Label text="Positive" style="-fx-text-fill: #3D8056; -fx-font-weight: bold;" />
+                            <Label fx:id="sentimentPositiveLabel" text="0%" style="-fx-text-fill: #26372D;" />
+                        </VBox>
+                        <VBox alignment="CENTER">
+                            <Label text="Neutral" style="-fx-text-fill: #657568; -fx-font-weight: bold;" />
+                            <Label fx:id="sentimentNeutralLabel" text="0%" style="-fx-text-fill: #26372D;" />
+                        </VBox>
+                        <VBox alignment="CENTER">
+                            <Label text="Negative" style="-fx-text-fill: #B65C52; -fx-font-weight: bold;" />
+                            <Label fx:id="sentimentNegativeLabel" text="0%" style="-fx-text-fill: #26372D;" />
+                        </VBox>
+                        <VBox alignment="CENTER">
+                            <Label text="Net Polarity" style="-fx-text-fill: #2D6042; -fx-font-weight: bold;" />
+                            <Label fx:id="sentimentScoreLabel" text="0.00" style="-fx-text-fill: #26372D;" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox HBox.hgrow="ALWAYS" spacing="14" prefWidth="400">
+                    <VBox styleClass="metric-card" spacing="8" VBox.vgrow="ALWAYS">
+                        <Label text="Top Positive Sentiment Keywords" style="-fx-text-fill: #3D8056; -fx-font-weight: bold;" />
+                        <ListView fx:id="topPositiveWordsList" VBox.vgrow="ALWAYS" />
+                    </VBox>
+                    <VBox styleClass="metric-card" spacing="8" VBox.vgrow="ALWAYS">
+                        <Label text="Top Negative Complaint Keywords" style="-fx-text-fill: #B65C52; -fx-font-weight: bold;" />
+                        <ListView fx:id="topNegativeWordsList" VBox.vgrow="ALWAYS" />
+                    </VBox>
+                </VBox>
+            </HBox>
+        </Tab>
+
+        <!-- 6. Best Posting Time Tab -->
+        <Tab text="Best Posting Time">
+            <VBox spacing="16" style="-fx-padding: 18px;">
+                <HBox spacing="16">
+                    <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="4">
+                        <Label fx:id="peakWindowLabel" text="Peak Window: 7 PM – 9 PM" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2D6042;" />
+                        <Label fx:id="peakWindowStatsLabel" text="Publishing during this period yields the highest average interaction rate." style="-fx-text-fill: #657568;" />
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="metric-card" VBox.vgrow="ALWAYS">
+                    <Label text="Average Interactions by Hour of Day (0:00 to 23:00)" styleClass="metric-title" />
+                    <BarChart fx:id="bestTimeChart" legendVisible="false" VBox.vgrow="ALWAYS">
+                        <xAxis><CategoryAxis label="Hour of Day" /></xAxis>
+                        <yAxis><NumberAxis label="Average Interactions" /></yAxis>
+                    </BarChart>
+                </VBox>
+            </VBox>
+        </Tab>
+
+        <!-- 7. Recommendations Tab -->
+        <Tab text="Recommendations">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="16" style="-fx-padding: 18px;">
+                    <Label text="Intelligent Strategic Recommendations (Rule-Based Engine)"
+                           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                    <Label text="Generated purely from actual calculated metrics without simulated claims."
+                           style="-fx-text-fill: #657568; -fx-font-size: 12px;" />
+                    <VBox fx:id="recommendationsContainer" spacing="12" />
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- 8. Posts Explorer Tab -->
+        <Tab text="Posts Explorer">
+            <VBox spacing="14" style="-fx-padding: 18px;">
+                <!-- Header and Filter Toolbar -->
+                <HBox spacing="12" alignment="CENTER_LEFT" styleClass="metric-card">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Normalized Multi-Platform Post Corpus &amp; Explorer" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                        <Label fx:id="postCountStatusLabel" text="Showing 0 posts across platforms" style="-fx-text-fill: #657568; -fx-font-size: 12px;" />
+                    </VBox>
+                    <Label text="Search:" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                    <TextField fx:id="postSearchField" promptText="Filter by caption, hashtag, or ID..." prefWidth="230" />
+                    <Label text="Platform:" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                    <ComboBox fx:id="postFilterPlatformCombo" prefWidth="140" />
+                    <Button text="Reset" onAction="#handleResetPostFilters" styleClass="btn-secondary" />
+                </HBox>
+
+                <!-- Responsive TableView -->
+                <TableView fx:id="allPostsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colAllId" text="Post ID" prefWidth="140" />
+                        <TableColumn fx:id="colAllPlatform" text="Platform" prefWidth="95" />
+                        <TableColumn fx:id="colAllContent" text="Post Caption / Content" prefWidth="380" />
+                        <TableColumn fx:id="colAllType" text="Type" prefWidth="90" />
+                        <TableColumn fx:id="colAllTimestamp" text="Published Date" prefWidth="140" />
+                        <TableColumn fx:id="colAllLikes" text="Likes" prefWidth="85" style="-fx-alignment: CENTER_RIGHT;" />
+                        <TableColumn fx:id="colAllComments" text="Comments" prefWidth="85" style="-fx-alignment: CENTER_RIGHT;" />
+                        <TableColumn fx:id="colAllShares" text="Shares" prefWidth="80" style="-fx-alignment: CENTER_RIGHT;" />
+                        <TableColumn fx:id="colAllViews" text="Views" prefWidth="85" style="-fx-alignment: CENTER_RIGHT;" />
+                        <TableColumn fx:id="colAllInteractions" text="Interactions" prefWidth="110" style="-fx-alignment: CENTER_RIGHT;" />
+                        <TableColumn fx:id="colAllAction" text="Actions" prefWidth="110" style="-fx-alignment: CENTER;" />
+                    </columns>
+                </TableView>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="💡 TIP: Double-click any row to view complete caption and detailed post analytics. Columns are resizable and sortable."
+                           style="-fx-text-fill: #657568; -fx-font-size: 11px; -fx-font-style: italic;" />
+                </HBox>
+            </VBox>
+        </Tab>
+
+        <!-- 9. Connect Accounts Tab -->
+        <Tab text="Connect Accounts">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="18" style="-fx-padding: 20px;">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="Social Media Integrations" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                            <Label text="Connect authorized official accounts or toggle transparent Demo Mode." style="-fx-text-fill: #657568;" />
+                        </VBox>
+                        <Button text="Connect All in Demo Mode" onAction="#handleConnectAllDemo" styleClass="btn-primary" />
+                        <Button text="+ Connect Social Media Account" onAction="#handleConnectOAuthDialog" styleClass="btn-success" />
+                    </HBox>
+
+                    <!-- Platform Cards Grid -->
+                    <GridPane hgap="16" vgap="16">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50" />
+                            <ColumnConstraints percentWidth="50" />
+                        </columnConstraints>
+
+                        <!-- Instagram -->
+                        <VBox styleClass="metric-card" spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Instagram" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #397653;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="igStatusLabel" text="Disconnected" style="-fx-text-fill: #657568; -fx-font-weight: bold;" />
+                            </HBox>
+                            <Label fx:id="igAccountLabel" text="Account: Not connected" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 600;" />
+                            <Label fx:id="igSyncedLabel" text="" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label fx:id="igReasonLabel" text="" wrapText="true" visible="false" managed="false" style="-fx-text-fill: #B65C52; -fx-font-size: 11px; -fx-background-color: #F9EAEA; -fx-padding: 4 8; -fx-background-radius: 4;" />
+                            <Label text="API: Meta Instagram Graph API (v19.0)" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label text="Permitted: Business/Creator media, comments, impressions." style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4 0 0 0;">
+                                <Button fx:id="igSyncBtn" text="↻ Sync Data" onAction="#handleSyncInstagram" styleClass="btn-secondary" />
+                                <Button fx:id="igDisconnectBtn" text="Disconnect" onAction="#handleDisconnectInstagram" styleClass="btn-secondary" style="-fx-text-fill: #B65C52;" />
+                                <Button fx:id="igConnectBtn" text="Connect OAuth" onAction="#handleConnectInstagram" styleClass="btn-success" />
+                                <Button fx:id="igDemoBtn" text="Demo Mode" onAction="#handleDemoInstagram" styleClass="btn-primary" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- Facebook -->
+                        <VBox styleClass="metric-card" spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Facebook" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #82966B;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="fbStatusLabel" text="Disconnected" style="-fx-text-fill: #657568; -fx-font-weight: bold;" />
+                            </HBox>
+                            <Label fx:id="fbAccountLabel" text="Account: Not connected" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 600;" />
+                            <Label fx:id="fbSyncedLabel" text="" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label fx:id="fbReasonLabel" text="" wrapText="true" visible="false" managed="false" style="-fx-text-fill: #B65C52; -fx-font-size: 11px; -fx-background-color: #F9EAEA; -fx-padding: 4 8; -fx-background-radius: 4;" />
+                            <Label text="API: Meta Facebook Pages Graph API (v19.0)" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label text="Permitted: Page posts, reactions, comments, reach." style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4 0 0 0;">
+                                <Button fx:id="fbSyncBtn" text="↻ Sync Data" onAction="#handleSyncFacebook" styleClass="btn-secondary" />
+                                <Button fx:id="fbDisconnectBtn" text="Disconnect" onAction="#handleDisconnectFacebook" styleClass="btn-secondary" style="-fx-text-fill: #B65C52;" />
+                                <Button fx:id="fbConnectBtn" text="Connect OAuth" onAction="#handleConnectFacebook" styleClass="btn-success" />
+                                <Button fx:id="fbDemoBtn" text="Demo Mode" onAction="#handleDemoFacebook" styleClass="btn-primary" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- LinkedIn -->
+                        <VBox styleClass="metric-card" spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="LinkedIn" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #91AD8B;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="liStatusLabel" text="Disconnected" style="-fx-text-fill: #657568; -fx-font-weight: bold;" />
+                            </HBox>
+                            <Label fx:id="liAccountLabel" text="Account: Not connected" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 600;" />
+                            <Label fx:id="liSyncedLabel" text="" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label fx:id="liReasonLabel" text="" wrapText="true" visible="false" managed="false" style="-fx-text-fill: #B65C52; -fx-font-size: 11px; -fx-background-color: #F9EAEA; -fx-padding: 4 8; -fx-background-radius: 4;" />
+                            <Label text="API: LinkedIn Community Management API (v2)" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label text="Permitted: Organization posts, UGC shares, engagement." style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4 0 0 0;">
+                                <Button fx:id="liSyncBtn" text="↻ Sync Data" onAction="#handleSyncLinkedIn" styleClass="btn-secondary" />
+                                <Button fx:id="liDisconnectBtn" text="Disconnect" onAction="#handleDisconnectLinkedIn" styleClass="btn-secondary" style="-fx-text-fill: #B65C52;" />
+                                <Button fx:id="liConnectBtn" text="Connect OAuth" onAction="#handleConnectLinkedIn" styleClass="btn-success" />
+                                <Button fx:id="liDemoBtn" text="Demo Mode" onAction="#handleDemoLinkedIn" styleClass="btn-primary" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- X -->
+                        <VBox styleClass="metric-card" spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="X (Twitter)" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="xStatusLabel" text="Disconnected" style="-fx-text-fill: #657568; -fx-font-weight: bold;" />
+                            </HBox>
+                            <Label fx:id="xAccountLabel" text="Account: Not connected" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 600;" />
+                            <Label fx:id="xSyncedLabel" text="" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label fx:id="xReasonLabel" text="" wrapText="true" visible="false" managed="false" style="-fx-text-fill: #B65C52; -fx-font-size: 11px; -fx-background-color: #F9EAEA; -fx-padding: 4 8; -fx-background-radius: 4;" />
+                            <Label text="API: X API v2 (Twitter API v2)" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <Label text="Permitted: Tweets lookup, likes, retweets, impressions." style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+                            <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4 0 0 0;">
+                                <Button fx:id="xSyncBtn" text="↻ Sync Data" onAction="#handleSyncX" styleClass="btn-secondary" />
+                                <Button fx:id="xDisconnectBtn" text="Disconnect" onAction="#handleDisconnectX" styleClass="btn-secondary" style="-fx-text-fill: #B65C52;" />
+                                <Button fx:id="xConnectBtn" text="Connect OAuth" onAction="#handleConnectX" styleClass="btn-success" />
+                                <Button fx:id="xDemoBtn" text="Demo Mode" onAction="#handleDemoX" styleClass="btn-primary" />
+                            </HBox>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- 10. Settings Tab -->
+        <Tab text="Settings">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="18" style="-fx-padding: 20px;" maxWidth="720">
+                    <Label text="System Configuration &amp; Algorithm Weights" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #26372D;" />
+
+                    <!-- Database Settings -->
+                    <VBox styleClass="metric-card" spacing="12">
+                        <Label text="MySQL JDBC Settings" styleClass="metric-title" />
+                        <VBox spacing="4">
+                            <Label text="JDBC URL" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                            <TextField fx:id="dbUrlField" />
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Database Username" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                            <TextField fx:id="dbUsernameField" />
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Database Password" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                            <PasswordField fx:id="dbPasswordField" />
+                        </VBox>
+                    </VBox>
+
+                    <!-- Trend Algorithm Weights -->
+                    <VBox styleClass="metric-card" spacing="12">
+                        <Label text="Trend Scoring Weights (Sum = 1.0)" styleClass="metric-title" />
+                        <HBox spacing="14">
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Mention Weight" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                                <TextField fx:id="weightMentionField" />
+                            </VBox>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Engagement Weight" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                                <TextField fx:id="weightEngagementField" />
+                            </VBox>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Growth Weight" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                                <TextField fx:id="weightGrowthField" />
+                            </VBox>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Recency Weight" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 500;" />
+                                <TextField fx:id="weightRecencyField" />
+                            </VBox>
+                        </HBox>
+                        <Button text="Save Settings &amp; Recompute" onAction="#handleSaveSettings" styleClass="btn-primary" />
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+    </TabPane>
+</VBox>

@@ -1,0 +1,47 @@
+# ====================================================================
+# TrendSense – .gitignore
+# ====================================================================
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Java and Maven build outputs
+target/
+*.class
+
+# Embedded Tomcat and runtime working directories
+tomcat.*/
+reports/
+logs/
+*.log
+tmp/
+temp/
+
+# Local databases and runtime state (H2 / SQLite)
+data/
+*.mv.db
+*.trace.db
+*.lock.db
+
+# IDE and Editor metadata
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+nbproject/
+*.sublime-workspace
+*.sublime-project
+
+# Operating System and Deployment Scripts
+*push*.bat
+.DS_Store
+Thumbs.db
+desktop.ini

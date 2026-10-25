@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.socialanalytics.javafx.controller.ModeSelectionController"
+      alignment="CENTER"
+      spacing="24"
+      style="-fx-background-color: #E8F0E8; -fx-padding: 40px;">
+
+    <!-- Brand Header -->
+    <VBox alignment="CENTER" spacing="6">
+        <HBox alignment="CENTER" spacing="10">
+            <Label text="Trend" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #397653;" />
+            <Label text="Sense" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #26372D;" />
+        </HBox>
+        <Label text="Social Media Analytics &amp; Trend Engine"
+               style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #657568; -fx-letter-spacing: 1px;" />
+    </VBox>
+
+    <!-- Welcome & Prompt -->
+    <VBox alignment="CENTER" spacing="6" maxWidth="680">
+        <Label fx:id="welcomeUserLabel" text="Welcome to TrendSense"
+               style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #26372D;" />
+        <Label text="Please select your operating mode to enter the analytics dashboard. No analytics, charts, or cached metrics are loaded until your mode is chosen."
+               style="-fx-font-size: 13px; -fx-text-fill: #657568; -fx-text-alignment: center;" wrapText="true" textAlignment="CENTER" />
+    </VBox>
+
+    <!-- Two Mode Cards Side-by-Side -->
+    <HBox spacing="24" alignment="CENTER" maxWidth="840">
+
+        <!-- Live Mode Card -->
+        <VBox HBox.hgrow="ALWAYS" spacing="16" maxWidth="400"
+              style="-fx-background-color: #FFFFFF; -fx-background-radius: 12px; -fx-border-color: #C5D9C5; -fx-border-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(38,55,45,0.06), 10, 0, 0, 2);">
+            
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="🌐" style="-fx-font-size: 24px;" />
+                <VBox spacing="2">
+                    <Label text="LIVE MODE" style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #397653;" />
+                    <Label text="Official API Integrations" style="-fx-font-size: 11px; -fx-text-fill: #657568; -fx-font-weight: 600;" />
+                </VBox>
+            </HBox>
+
+            <Separator />
+
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <Label text="• Connect authentic accounts via OAuth 2.0 (Instagram, Facebook, LinkedIn, X)."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• Live engagement rates, real impressions, follower counts, and authentic comments."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• Strict data integrity: Zero fabricated or mocked metrics."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• Direct access to manual Developer Testing tokens if OAuth is not configured."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+            </VBox>
+
+            <Button fx:id="btnLaunchLive" text="Launch Live Mode" onAction="#handleLaunchLiveMode"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #397653; -fx-text-fill: #FFFFFF; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12px; -fx-background-radius: 8px; -fx-cursor: hand;" />
+        </VBox>
+
+        <!-- Demo Mode Card -->
+        <VBox HBox.hgrow="ALWAYS" spacing="16" maxWidth="400"
+              style="-fx-background-color: #FFFFFF; -fx-background-radius: 12px; -fx-border-color: #C5D9C5; -fx-border-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(38,55,45,0.06), 10, 0, 0, 2);">
+            
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="⚡" style="-fx-font-size: 24px;" />
+                <VBox spacing="2">
+                    <Label text="DEMO MODE" style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #2D6042;" />
+                    <Label text="Multi-Platform Sandbox" style="-fx-font-size: 11px; -fx-text-fill: #657568; -fx-font-weight: 600;" />
+                </VBox>
+            </HBox>
+
+            <Separator />
+
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <Label text="• Complete multi-platform dataset pre-populated across all 4 platforms."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• Instant evaluation of Trend Scoring, Sentiment Analysis, and Best Time analyzer."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• Real-time Google Trends RSS integration with live search volumes."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+                <Label text="• No external API keys or developer accounts required."
+                       style="-fx-font-size: 12px; -fx-text-fill: #26372D;" wrapText="true" />
+            </VBox>
+
+            <Button fx:id="btnLaunchDemo" text="Launch Demo Mode" onAction="#handleLaunchDemoMode"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #DCE7DC; -fx-text-fill: #26372D; -fx-font-size: 14px; -fx-font-weight: bold; -fx-border-color: #C5D9C5; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12px; -fx-cursor: hand;" />
+        </VBox>
+
+    </HBox>
+
+    <!-- Footer Note & Logout -->
+    <HBox alignment="CENTER" spacing="20">
+        <Label text="💡 You can switch modes at any time inside the dashboard via the mode toggle."
+               style="-fx-font-size: 12px; -fx-text-fill: #657568;" />
+        <Button text="Log Out" onAction="#handleLogout"
+                style="-fx-background-color: transparent; -fx-text-fill: #B65C52; -fx-font-size: 12px; -fx-underline: true; -fx-cursor: hand;" />
+    </HBox>
+
+</VBox>

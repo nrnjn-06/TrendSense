@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.socialanalytics.javafx.controller.LoginController"
+      alignment="CENTER" spacing="0" prefHeight="680.0" prefWidth="960.0" styleClass="root">
+
+    <!-- Left Brand Panel -->
+    <VBox alignment="CENTER_LEFT" spacing="20" prefWidth="450.0"
+          style="-fx-background-color: #DCE7DC; -fx-padding: 44px; -fx-border-color: #C5D9C5; -fx-border-width: 0 1px 0 0;">
+        <VBox spacing="6">
+            <Label text="⚡ TrendSense" style="-fx-font-size: 30px; -fx-font-weight: 800; -fx-text-fill: #2D6042;" />
+            <Label text="Social Media Analytics &amp; Trend Engine"
+                   wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #657568; -fx-font-weight: 600;" />
+        </VBox>
+
+        <Separator style="-fx-background-color: #C5D9C5;" />
+
+        <VBox spacing="15">
+            <Label text="✓  Official Meta Graph API (Instagram &amp; Facebook)" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 500;" />
+            <Label text="✓  Real-Time Google Search Trends Integration" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 500;" />
+            <Label text="✓  Multithreaded Analytics (Engagement, Trends, Sentiment)" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 500;" />
+            <Label text="✓  Transparent Mathematical Scoring Justification" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 500;" />
+            <Label text="✓  Strict Live Mode &amp; Demo Mode Data Isolation" style="-fx-text-fill: #26372D; -fx-font-size: 13px; -fx-font-weight: 500;" />
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <VBox spacing="10" styleClass="notice-banner" style="-fx-background-color: #E2EBE2; -fx-border-color: #C5D9C5; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 14px;">
+            <Label text="⚡ INSTANT EVALUATION READY" style="-fx-text-fill: #2D6042; -fx-font-weight: 800; -fx-font-size: 11px;" />
+            <Label text="No live credentials required to evaluate. Explore all 4 platforms instantly in Demo Mode."
+                   wrapText="true" style="-fx-text-fill: #657568; -fx-font-size: 11px;" />
+            <Button text="⚡ Quick Guest Demo Access" onAction="#handleQuickDemoLogin" maxWidth="Infinity" styleClass="btn-primary" />
+        </VBox>
+    </VBox>
+
+    <!-- Right Warm White Card Login/Register Form -->
+    <VBox alignment="CENTER" spacing="16" prefWidth="510.0" style="-fx-padding: 44px; -fx-background-color: transparent;">
+        <VBox alignment="CENTER_LEFT" spacing="6" maxWidth="400"
+              style="-fx-padding: 28px; -fx-background-color: #FFFFFF; -fx-border-color: #C5D9C5; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(38, 55, 45, 0.06), 10, 0, 0, 2);">
+            
+            <Label text="Analyst Sign In" style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #26372D;" />
+            <Label text="Sign in to your account or register a new workspace" style="-fx-text-fill: #657568; -fx-font-size: 12px; -fx-padding: 0 0 10px 0;" />
+
+            <TabPane fx:id="authTabPane" tabClosingPolicy="UNAVAILABLE" maxWidth="Infinity">
+                <!-- Login Tab -->
+                <Tab text="Sign In">
+                    <VBox spacing="14" style="-fx-padding: 18px 0 0 0;">
+                        <VBox spacing="6">
+                            <Label text="Username or Email" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                            <TextField fx:id="loginUsernameField" promptText="Enter your username or email" />
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <Label text="Password" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                            <PasswordField fx:id="loginPasswordField" promptText="Enter password" />
+                        </VBox>
+
+                        <Label fx:id="loginErrorLabel" text="" wrapText="true" style="-fx-text-fill: #B65C52; -fx-font-size: 12px;" />
+
+                        <Button text="Sign In to Dashboard" onAction="#handleLogin" maxWidth="Infinity" styleClass="btn-primary" />
+                    </VBox>
+                </Tab>
+
+                <!-- Register Tab -->
+                <Tab text="Create Account">
+                    <VBox spacing="14" style="-fx-padding: 18px 0 0 0;">
+                        <VBox spacing="6">
+                            <Label text="Username" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                            <TextField fx:id="regUsernameField" promptText="Choose username (letters, numbers, _)" />
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <Label text="Email Address" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                            <TextField fx:id="regEmailField" promptText="name@example.com" />
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <Label text="Password" style="-fx-text-fill: #26372D; -fx-font-size: 12px; -fx-font-weight: 600;" />
+                            <PasswordField fx:id="regPasswordField" promptText="Minimum 6 characters" />
+                        </VBox>
+
+                        <Label fx:id="regErrorLabel" text="" wrapText="true" style="-fx-text-fill: #B65C52; -fx-font-size: 12px;" />
+
+                        <Button text="Register &amp; Launch" onAction="#handleRegister" maxWidth="Infinity" styleClass="btn-success" />
+                    </VBox>
+                </Tab>
+            </TabPane>
+        </VBox>
+    </VBox>
+
+</HBox>
