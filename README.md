@@ -5,7 +5,6 @@
 [![UI Desktop](https://img.shields.io/badge/JavaFX-21-blue.svg)](https://openjfx.io/)
 [![UI Web](https://img.shields.io/badge/Jakarta%20Servlets-10%20%7C%20JSP-007396.svg)](https://jakarta.ee/)
 [![Database](https://img.shields.io/badge/Database-MySQL%20%7C%20Embedded%20H2%20Fallback-4479A1.svg)](https://www.h2database.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > **TrendSense** is an enterprise-grade multi-platform social media intelligence system engineered entirely in Java. It empowers creators, marketing agencies, and analysts to authorize official accounts across **Instagram**, **Facebook**, **LinkedIn**, and **X (Twitter)**, fetch verified metrics, analyze sentiment and growth trends concurrently using high-performance multithreading, and derive actionable, rule-based strategic recommendations.
 
