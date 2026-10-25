@@ -26,7 +26,6 @@
 12. [Automated Testing Suite](#-automated-testing-suite)
 13. [Troubleshooting & FAQs](#-troubleshooting--faqs)
 14. [Security & Privacy Audit](#-security--privacy-audit)
-15. [License](#-license)
 
 ---
 
@@ -385,6 +384,4 @@ TrendSense has been audited for open-source distribution and enterprise privacy:
 
 ---
 
-## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for full details.
